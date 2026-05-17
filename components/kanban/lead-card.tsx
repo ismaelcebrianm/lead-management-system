@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog"
 import { type Lead, LEAD_STATUSES } from "@/lib/types"
 import { createClient } from "@/lib/supabase/client"
-import { MoreHorizontal, Mail, Calendar, GripVertical, Trash2, Eye } from "lucide-react"
+import { MoreHorizontal, Mail, Calendar, GripVertical, Trash2, Eye, RefreshCw } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface LeadCardProps {
@@ -130,13 +130,19 @@ export function LeadCard({ lead, isDragging, onUpdate }: LeadCardProps) {
                 <Mail className="h-3 w-3" />
                 <span className="truncate">{lead.email}</span>
               </div>
-              {lead.nivel_ia && (
-                <div className="mt-2">
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                {lead.nivel_ia && (
                   <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                     {lead.nivel_ia}
                   </span>
-                </div>
-              )}
+                )}
+                {lead.interacciones > 1 && (
+                  <span className="text-xs bg-orange-500/10 text-orange-500 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <RefreshCw className="h-2.5 w-2.5" />
+                    {lead.interacciones} visitas
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
                 <Calendar className="h-3 w-3" />
                 <span>{formatDate(lead.created_at)}</span>
@@ -183,7 +189,7 @@ export function LeadCard({ lead, isDragging, onUpdate }: LeadCardProps) {
                 <p className="text-foreground whitespace-pre-wrap">{lead.reto}</p>
               </div>
             )}
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Creado</p>
                 <p className="text-foreground">{formatDate(lead.created_at)}</p>
@@ -191,6 +197,10 @@ export function LeadCard({ lead, isDragging, onUpdate }: LeadCardProps) {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Actualizado</p>
                 <p className="text-foreground">{formatDate(lead.updated_at)}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Visitas</p>
+                <p className="text-foreground font-semibold">{lead.interacciones ?? 1}</p>
               </div>
             </div>
           </div>

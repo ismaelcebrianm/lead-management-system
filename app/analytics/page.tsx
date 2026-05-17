@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { type Lead, LEAD_STATUSES } from "@/lib/types"
-import { RefreshCw, Users, TrendingUp, Clock, CheckCircle } from "lucide-react"
+import { RefreshCw, Users, TrendingUp, Clock, CheckCircle, Repeat2 } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 import {
   BarChart,
@@ -95,6 +95,8 @@ export default function AnalyticsPage() {
   const newLeads = leads.filter((l) => l.status === "nuevo").length
   const convertedLeads = leads.filter((l) => l.status === "convertido").length
   const conversionRate = totalLeads > 0 ? ((convertedLeads / totalLeads) * 100).toFixed(1) : "0"
+  const recurrentLeads = leads.filter((l) => (l.interacciones ?? 1) > 1).length
+  const totalInteracciones = leads.reduce((sum, l) => sum + (l.interacciones ?? 1), 0)
 
   // Recent leads (last 7 days)
   const recentLeads = useMemo(() => {
@@ -134,7 +136,7 @@ export default function AnalyticsPage() {
         ) : (
           <div className="space-y-6">
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
@@ -180,6 +182,18 @@ export default function AnalyticsPage() {
                   <div className="text-2xl font-bold">{conversionRate}%</div>
                   <p className="text-xs text-muted-foreground">
                     De leads a clientes
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Recurrentes</CardTitle>
+                  <Repeat2 className="h-4 w-4 text-orange-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{recurrentLeads}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {totalInteracciones} envíos totales
                   </p>
                 </CardContent>
               </Card>

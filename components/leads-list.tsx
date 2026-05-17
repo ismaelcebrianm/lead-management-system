@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { type Lead, LEAD_STATUSES, getStatusInfo } from "@/lib/types"
 import { createClient } from "@/lib/supabase/client"
-import { MoreHorizontal, Trash2 } from "lucide-react"
+import { MoreHorizontal, Trash2, RefreshCw } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface LeadsListProps {
@@ -58,6 +58,7 @@ export function LeadsList({ leads, onLeadsChange }: LeadsListProps) {
             <TableHead>Nivel IA</TableHead>
             <TableHead>Clasificación</TableHead>
             <TableHead>Estado</TableHead>
+            <TableHead>Visitas</TableHead>
             <TableHead>Fecha</TableHead>
             <TableHead className="w-[50px]"></TableHead>
           </TableRow>
@@ -81,6 +82,16 @@ export function LeadsList({ leads, onLeadsChange }: LeadsListProps) {
                     <div className={cn("w-2 h-2 rounded-full", statusInfo.color)} />
                     <span className="text-sm">{statusInfo.label}</span>
                   </div>
+                </TableCell>
+                <TableCell>
+                  {(lead.interacciones ?? 1) > 1 ? (
+                    <span className="text-xs bg-orange-500/10 text-orange-500 px-2 py-0.5 rounded-full flex items-center gap-1 w-fit">
+                      <RefreshCw className="h-2.5 w-2.5" />
+                      {lead.interacciones}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">1</span>
+                  )}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {formatDate(lead.created_at)}

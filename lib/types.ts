@@ -11,6 +11,7 @@ export interface Lead {
   clasificacion: string | null
   status: LeadStatus
   notas: string | null
+  interacciones: number
   created_at: string
   updated_at: string
 }
