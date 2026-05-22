@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useState, useCallback } from "react"
 import useSWR from "swr"
 import { KanbanBoard } from "@/components/kanban"
 import { Button } from "@/components/ui/button"
@@ -34,6 +34,7 @@ const fetchLeads = async (): Promise<Lead[]> => {
 export default function CRMPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
+  const [canalFilter, setCanalFilter] = useState<string>("all")
   const [viewMode, setViewMode] = useState<ViewMode>("kanban")
 
   const { data: leads = [], mutate, isLoading } = useSWR<Lead[]>("leads", fetchLeads, {
@@ -44,11 +45,13 @@ export default function CRMPage() {
     const matchesSearch =
       `${lead.nombre} ${lead.apellido}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (lead.nombre_negocio && lead.nombre_negocio.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (lead.dedicacion && lead.dedicacion.toLowerCase().includes(searchTerm.toLowerCase()))
 
     const matchesStatus = statusFilter === "all" || lead.status === statusFilter
+    const matchesCanal  = canalFilter === "all" || (lead.canal ?? "formulario") === canalFilter
 
-    return matchesSearch && matchesStatus
+    return matchesSearch && matchesStatus && matchesCanal
   })
 
   const handleRefresh = useCallback(() => {
@@ -82,18 +85,18 @@ export default function CRMPage() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <div className="relative w-full sm:w-[300px]">
+            <div className="relative w-full sm:w-[260px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar leads..."
+                placeholder="Buscar leads o negocio..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Filtrar por estado" />
+              <SelectTrigger className="w-full sm:w-[165px]">
+                <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los estados</SelectItem>
@@ -105,6 +108,16 @@ export default function CRMPage() {
                     </div>
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+            <Select value={canalFilter} onValueChange={setCanalFilter}>
+              <SelectTrigger className="w-full sm:w-[145px]">
+                <SelectValue placeholder="Canal" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los canales</SelectItem>
+                <SelectItem value="formulario">Formulario</SelectItem>
+                <SelectItem value="telegram">Telegram</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -133,10 +146,7 @@ export default function CRMPage() {
           {LEAD_STATUSES.map((status) => {
             const count = leads.filter((l) => l.status === status.value).length
             return (
-              <div
-                key={status.value}
-                className="bg-card rounded-lg p-4 border"
-              >
+              <div key={status.value} className="bg-card rounded-lg p-4 border">
                 <div className="flex items-center gap-2 mb-1">
                   <div className={`w-2 h-2 rounded-full ${status.color}`} />
                   <span className="text-sm text-muted-foreground">{status.label}</span>
