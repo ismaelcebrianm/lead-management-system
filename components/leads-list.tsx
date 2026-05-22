@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-import { type Lead, LEAD_STATUSES, getStatusInfo } from "@/lib/types"
+import { type Lead, LEAD_STATUSES, getStatusInfo, getCanalBadge, getEstadoDemoBadge } from "@/lib/types"
 import { createClient } from "@/lib/supabase/client"
 import { MoreHorizontal, Trash2, RefreshCw } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -53,27 +53,34 @@ export function LeadsList({ leads, onLeadsChange }: LeadsListProps) {
         <TableHeader>
           <TableRow>
             <TableHead>Nombre</TableHead>
+            <TableHead>Negocio</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead>Dedicación</TableHead>
-            <TableHead>Nivel IA</TableHead>
+            <TableHead>Canal</TableHead>
             <TableHead>Clasificación</TableHead>
             <TableHead>Estado</TableHead>
-            <TableHead>Visitas</TableHead>
+            <TableHead>Demo</TableHead>
             <TableHead>Fecha</TableHead>
             <TableHead className="w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {leads.map((lead) => {
-            const statusInfo = getStatusInfo(lead.status)
+            const statusInfo   = getStatusInfo(lead.status)
+            const canalBadge   = getCanalBadge(lead.canal)
+            const demoBadge    = getEstadoDemoBadge(lead.estado_demo)
+
             return (
               <TableRow key={lead.id}>
-                <TableCell className="font-medium">{lead.nombre} {lead.apellido}</TableCell>
+                <TableCell className="font-medium whitespace-nowrap">
+                  {lead.nombre} {lead.apellido}
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {lead.nombre_negocio || "-"}
+                </TableCell>
                 <TableCell>{lead.email}</TableCell>
-                <TableCell>{lead.dedicacion}</TableCell>
                 <TableCell>
-                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                    {lead.nivel_ia}
+                  <span className={cn("text-xs px-2 py-0.5 rounded-full font-medium", canalBadge.classes)}>
+                    {canalBadge.label}
                   </span>
                 </TableCell>
                 <TableCell>{lead.clasificacion || "-"}</TableCell>
@@ -84,16 +91,20 @@ export function LeadsList({ leads, onLeadsChange }: LeadsListProps) {
                   </div>
                 </TableCell>
                 <TableCell>
-                  {(lead.interacciones ?? 1) > 1 ? (
-                    <span className="text-xs bg-orange-500/10 text-orange-500 px-2 py-0.5 rounded-full flex items-center gap-1 w-fit">
-                      <RefreshCw className="h-2.5 w-2.5" />
-                      {lead.interacciones}
-                    </span>
+                  {demoBadge ? (
+                    <div className="space-y-0.5">
+                      <span className={cn("text-xs px-2 py-0.5 rounded-full font-medium", demoBadge.classes)}>
+                        {demoBadge.label}
+                      </span>
+                      {lead.demo_fecha && (
+                        <p className="text-xs text-muted-foreground">{lead.demo_fecha} {lead.demo_hora}</p>
+                      )}
+                    </div>
                   ) : (
-                    <span className="text-sm text-muted-foreground">1</span>
+                    <span className="text-muted-foreground text-sm">-</span>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-muted-foreground whitespace-nowrap">
                   {formatDate(lead.created_at)}
                 </TableCell>
                 <TableCell>
