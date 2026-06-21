@@ -47,6 +47,22 @@ export function getCanalBadge(canal: string | null) {
   return { label: "Formulario", classes: "bg-indigo-500/10 text-indigo-500" }
 }
 
+export interface Prospecto {
+  id: string
+  created_at: string
+  updated_at: string
+  nombre_negocio: string
+  nombre_decisor: string | null
+  ubicacion: string | null
+  correo: string | null
+  telefono: string | null
+  sector: string
+  contactado: boolean
+  interesado: boolean | null
+  motivo_rechazo: string | null
+  notas: string | null
+}
+
 export function getEstadoDemoBadge(estado: string | null) {
   if (estado === "CONFIRMADA") return { label: "Demo confirmada", classes: "bg-green-500/10 text-green-600" }
   if (estado === "CANCELADA")  return { label: "Demo cancelada",  classes: "bg-red-500/10 text-red-500" }

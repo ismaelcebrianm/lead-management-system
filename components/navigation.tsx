@@ -4,11 +4,12 @@ import { useCallback } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Bot, Sparkles, LayoutGrid, BarChart3, FileText, LogOut } from "lucide-react"
+import { Bot, Sparkles, LayoutGrid, BarChart3, FileText, LogOut, Target } from "lucide-react"
 
 const navItems = [
   { href: "/", label: "Formulario", icon: FileText },
   { href: "/crm", label: "CRM", icon: LayoutGrid },
+  { href: "/prospeccion", label: "Prospección", icon: Target },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
 ]
 
